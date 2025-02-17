@@ -1,0 +1,24 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Node 20",
+	"_version": "20.1.0",
+
+	"compilerOptions": {
+		"outDir": "./dist",
+		"declaration": true,
+		"module": "ESNext",
+		"target": "ESNext",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"esModuleInterop": true,
+		"strict": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+			// "@core/*": ["../core/src/*"]
+		},
+		"types": ["vitest/globals"]
+	},
+	"include": ["src/**/*", "test/**/*"],
+	"exclude": ["node_modules", "**/__internal__/**/*"]
+}

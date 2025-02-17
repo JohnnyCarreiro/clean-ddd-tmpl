@@ -1,0 +1,21 @@
+{
+	"name": "@ddd/domain",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/main.ts",
+	"types": "src/main.ts",
+	"type": "module",
+	"scripts": {
+		"test": "vitest"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@ddd/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^22.13.4",
+		"vitest": "^3.0.5"
+	}
+}
