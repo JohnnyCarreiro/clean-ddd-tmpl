@@ -2,17 +2,17 @@
 	"name": "@ddd/core",
 	"version": "1.0.0",
 	"description": "",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "dist/src/index.js",
+	"types": "dist/src/index.d.ts",
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "dist/index.js",
-			"require": "dist/index.cjs"
+			"import": "dist/src/index.js",
+			"require": "dist/src/index.cjs"
 		}
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "rm -rf dist && tsc && cp -r types dist/types",
 		"test": "vitest"
 	},
 	"keywords": [],

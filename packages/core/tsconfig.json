@@ -18,7 +18,8 @@
 			"@/*": ["src/*"]
 		},
 		"types": ["vitest/globals"]
+		// "types": ["vitest/globals", "types/**/*.d.ts"]
 	},
-	"include": ["src/**/*", "test/**/*", "*.ts"],
+	"include": ["src/**/*", "test/**/*", "*.ts", "types/**/*"],
 	"exclude": ["node_modules", "./src/**/__internal__/**/*", "*.config.ts"]
 }
