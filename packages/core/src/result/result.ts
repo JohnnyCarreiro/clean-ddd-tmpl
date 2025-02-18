@@ -31,4 +31,4 @@ function err<E>(error: E): Err<E> {
 	return new Err(error);
 }
 
-export { err as Err, ok as Ok, Result };
+export { err as Err, ok as Ok, Result, Err as ErrType, Ok as OkType };
