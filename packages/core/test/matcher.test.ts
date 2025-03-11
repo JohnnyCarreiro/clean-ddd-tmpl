@@ -20,7 +20,7 @@ describe("Result Test Suite", () => {
 
 		const result = match(sut, {
 			Ok: (value) => `Value: ${value}`,
-			Err: (error) => "Value: Error",
+			Err: (_) => "Value: Error",
 		});
 
 		expect(result).toBe("Value: Error");
@@ -47,6 +47,31 @@ describe("Option Test Suite", () => {
 			None: () => "No value",
 		});
 
+		match(sut, {
+			Some: (_) => 1,
+			None: () => 0,
+		});
+
 		expect(result).toBe("No value");
+	});
+
+	it("should convert Result to Option", () => {
+		const sut: Result<string, Error> = Ok("Success");
+		const result = match(sut, {
+			Ok: (value) => Some(value),
+			Err: (_) => None(),
+		});
+
+		expect(result.unwrap()).toBe("Success");
+	});
+
+	it("should convert Option to Result", () => {
+		const sut: Option<string> = Some("Success");
+		const result = match(sut, {
+			Some: (value) => Ok(value),
+			None: () => Err("Some Error"),
+		});
+
+		expect(result.unwrap()).toBe("Success");
 	});
 });

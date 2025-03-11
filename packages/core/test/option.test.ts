@@ -1,4 +1,5 @@
-import { None, Option, Some } from "@/option";
+// import { None, Option, Some } from "@/option";
+import { Option } from "@/option";
 
 describe("Option", () => {
 	it("should create a Some option and access its value", () => {
