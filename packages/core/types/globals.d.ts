@@ -7,16 +7,38 @@ import {
 } from "../src/option/__internal__/types";
 
 declare global {
-	function match<T, E, R>(
-		matcher: Result<T, E> | Option<T>,
+	function match<T, E extends Error, R>(
+		matcher: ResultType<T, E>,
 		cases: {
-			Ok?: (value: T) => R;
-			Err?: (error: E) => R;
-			Some?: (value: T) => R;
-			None?: () => R;
+			Ok: (value: T) => R;
+			Err: (error: E) => R;
 		},
 	): R;
 
+	// Overload para Option<T>
+	function match<T, R>(
+		matcher: Option<T>,
+		cases: {
+			Some: (value: T) => R;
+			None: () => R;
+		},
+	): R;
+
+	function match<T, E extends Error>(
+		matcher: Result<T, E>,
+		cases: {
+			Ok: (value: T) => Some<T>;
+			Err: (error: E) => Option<T>;
+		},
+	): Option<T>;
+
+	function match<T, E extends Error = Error>(
+		matcher: Option<T>,
+		cases: {
+			Some: (value: T) => Result<T, E>;
+			None: () => Result<t, E>;
+		},
+	): Result<T, E>;
 
 	/**
 	 * Represents the result of an operation that can either succeed (`Ok`) or fail (`Err`).
