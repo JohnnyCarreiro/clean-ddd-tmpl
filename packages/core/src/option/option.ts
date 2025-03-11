@@ -30,4 +30,7 @@ function None(): NoneType {
 	return new NoneType();
 }
 
+(global as any).Some = Some;
+(global as any).None = None;
+
 export { None, Some, Option };
