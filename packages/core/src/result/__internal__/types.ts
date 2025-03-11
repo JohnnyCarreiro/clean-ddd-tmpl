@@ -1,19 +1,40 @@
+// type Ok<T, E = never> = [T] extends [never] ? never : T;
+// type Err<E, T = never> = [E] extends [never] ? never : E;
+//
+// type Result<T, E extends Error | string = Error> = Ok<T> | Err<E>;
+
+type OkType<T> = [T] extends [never] ? never : T;
+type ErrType<E> = [E] extends [never] ? never : E;
+
 /**
  * Represents the result of an operation that can either succeed (`Ok`) or fail (`Err`).
  */
-type Result<T, E> = Ok<T> | Err<E>;
+// type Result<T, E extends Error | string = Error> = OkType<T> | ErrType<E>;
+type Result<T, E extends Error> = Ok<OkType<T>> | Err<ErrType<E>>;
+
+/**
+ * Represents the result methods that must be implemented for success (`Ok`) or failure (`Err`).
+ */
+interface ResultDefinition<T = never, E = never> {
+	isOk(): this is Ok<T>;
+	isErr(): this is Err<E extends Error ? E : Error>;
+	unwrap(): T;
+	unwrapErr(): E;
+	map<U>(fn: (value: T) => U): ResultDefinition<U, E>;
+	flatMap<U>(fn: (value: T) => ResultDefinition<U, E>): ResultDefinition<U, E>;
+	mapErr<U extends Error>(fn: (err: E) => U): ResultDefinition<T, U>;
+}
 
 /**
  * Represents a successful result (`Ok`) that contains a value.
  * @template T The type of the value contained in this `Ok`.
  */
-class Ok<T> {
+class Ok<T> implements ResultDefinition<T, never> {
 	/**
 	 * Creates a new `Ok` instance with the given value.
 	 * @param value The value to wrap in the `Ok` instance.
 	 */
 	constructor(private value: T) {}
-
 	/**
 	 * Checks if this result is an `Ok`.
 	 * @returns `true` because this is an `Ok`.
@@ -26,7 +47,7 @@ class Ok<T> {
 	 * Checks if this result is an `Err`.
 	 * @returns `false` because this is an `Ok`.
 	 */
-	isErr(): this is Err<unknown> {
+	isErr(): this is Err<never> {
 		return false;
 	}
 
@@ -44,8 +65,8 @@ class Ok<T> {
 	 * @param fn The transformation function to apply to the value.
 	 * @returns A new `Ok` containing the transformed value.
 	 */
-	map<U>(fn: (value: T) => U): Result<U, never> {
-		return new Ok(fn(this.value));
+	map<U>(fn: (value: T) => U): ResultDefinition<U, never> {
+		return new Ok(fn(this.value)) as ResultDefinition<U, never>;
 	}
 
 	/**
@@ -54,7 +75,9 @@ class Ok<T> {
 	 * @param fn The transformation function to apply to the value.
 	 * @returns The result of applying the transformation function.
 	 */
-	flatMap<U>(fn: (value: T) => Result<U, never>): Result<U, never> {
+	flatMap<U>(
+		fn: (value: T) => ResultDefinition<U, never>,
+	): ResultDefinition<U, never> {
 		return fn(this.value);
 	}
 
@@ -64,8 +87,10 @@ class Ok<T> {
 	 * @param _fn The mapping function for errors (not used).
 	 * @returns The original `Ok` instance.
 	 */
-	mapErr<U>(_fn: (err: never) => U): Result<T, never> {
-		return this;
+	// mapErr<U extends Error | string>(fn: (err: U) => U): Result<T, never> {
+	// 	return this;
+	mapErr<U extends Error>(_fn: (err: never) => U): ResultDefinition<T, U> {
+		return this as unknown as ResultDefinition<T, U>;
 	}
 
 	/**
@@ -81,12 +106,22 @@ class Ok<T> {
  * Represents a failed result (`Err`) that contains an error value.
  * @template E The type of the error contained in this `Err`.
  */
-class Err<E> {
+class Err<E extends Error> extends Error implements ResultDefinition<never, E> {
+	private error: E;
 	/**
 	 * Creates a new `Err` instance with the given error value.
 	 * @param error The error to wrap in the `Err` instance.
 	 */
-	constructor(private error: E) {}
+	constructor(error: E | string) {
+		super(typeof error === "string" ? error : error.message);
+		this.error =
+			typeof error === "string" ? (new Error(error) as E) : (error as E);
+		Object.setPrototypeOf(this, Err.prototype);
+
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, Err);
+		}
+	}
 
 	/**
 	 * Checks if this result is an `Ok`.
@@ -100,7 +135,7 @@ class Err<E> {
 	 * Checks if this result is an `Err`.
 	 * @returns `true` because this is an `Err`.
 	 */
-	isErr(): this is Err<E> {
+	isErr(): this is Err<E extends Error ? E : Error> {
 		return true;
 	}
 
@@ -118,8 +153,8 @@ class Err<E> {
 	 * @param _fn The mapping function for values (not used).
 	 * @returns The original `Err` instance.
 	 */
-	map<U>(_fn: (value: never) => U): Result<never, E> {
-		return this;
+	map<U>(_fn: (value: never) => U): ResultDefinition<never, E> {
+		return this as unknown as ResultDefinition<never, E>;
 	}
 
 	/**
@@ -128,8 +163,8 @@ class Err<E> {
 	 * @param fn The transformation function to apply to the error value.
 	 * @returns A new `Err` containing the transformed error.
 	 */
-	mapErr<U>(fn: (err: E) => U): Result<never, U> {
-		return new Err(fn(this.error));
+	mapErr<U extends Error>(fn: (err: E) => U): ResultDefinition<never, U> {
+		return new Err<U>(fn(this.error)) as unknown as ResultDefinition<never, U>;
 	}
 
 	/**
@@ -138,8 +173,10 @@ class Err<E> {
 	 * @param _fn The transformation function (ignored in this implementation).
 	 * @returns The original `Err` instance.
 	 */
-	flatMap<U>(_fn: (value: never) => Result<U, never>): Result<never, E> {
-		return this;
+	flatMap<U>(
+		_fn: (value: never) => ResultDefinition<U, never>,
+	): ResultDefinition<never, E> {
+		return this as unknown as ResultDefinition<never, E>;
 	}
 
 	/**
@@ -151,7 +188,6 @@ class Err<E> {
 	}
 }
 
-/**
- * @package
- */
+// (global as any).Result = Result;
+
 export { Err, Ok, Result };

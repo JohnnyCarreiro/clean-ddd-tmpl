@@ -1,7 +1,4 @@
-// import "./__internal__/types";
-// import * as from "./__internal__/types";
-
-import { Err, Ok, Result } from "./__internal__/types";
+import { Err as ErrType, Ok as OkType, Result } from "./__internal__/types";
 
 /**
  * Creates a new `Ok` instance, representing a successful result.
@@ -13,8 +10,8 @@ import { Err, Ok, Result } from "./__internal__/types";
  * console.log(result.isOk()); // true
  * console.log(result.unwrap()); // 42
  */
-function ok<T>(value: T): Ok<T> {
-	return new Ok(value);
+function Ok<T>(value: T): Result<T, never> {
+	return new OkType(value) as Result<T, never>;
 }
 
 /**
@@ -27,8 +24,11 @@ function ok<T>(value: T): Ok<T> {
  * console.log(result.isErr()); // true
  * console.log(result.unwrapErr()); // "Something went wrong"
  */
-function err<E>(error: E): Err<E> {
-	return new Err(error);
+function Err<E extends Error>(error: E | string): Result<never, E> {
+	return new ErrType(error) as unknown as Result<never, E>;
 }
 
-export { err as Err, ok as Ok, Result, Err as ErrType, Ok as OkType };
+(global as any).Ok = Ok;
+(global as any).Err = Err;
+
+export { Err, Ok, Result, ErrType, OkType };
