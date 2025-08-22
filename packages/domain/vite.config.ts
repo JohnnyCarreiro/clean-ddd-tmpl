@@ -10,5 +10,6 @@ export default defineConfig({
 	plugins: [],
 	test: {
 		globals: true,
+		setupFiles: "./test/setup-tests.ts",
 	},
 });

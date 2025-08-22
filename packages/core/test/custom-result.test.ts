@@ -1,9 +1,6 @@
 import { Result as ResultType } from "@/result";
 
-// type Ok<T> = [T] extends [never] ? never : T;
-// type Err<E> = [E] extends [never] ? never : E;
-
-type Result<T> = ResultType<Ok<T>, Err<Error>>;
+type Result<T> = ResultType<T, Error>;
 
 describe("Custom Result test suite", () => {
 	it("should create an Ok result using a custom result type with only success type definition and access its value", () => {

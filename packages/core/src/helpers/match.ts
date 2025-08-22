@@ -1,21 +1,21 @@
 import { Result } from "../result";
 import { Option } from "../option";
 
-function match<T, E extends Error, R>(
+export function match<T, E extends Error, R>(
 	matcher: Result<T, E>,
 	cases: {
 		Ok: (value: T) => R;
 		Err: (error: E) => R;
 	},
 ): R;
-function match<T, R>(
+export function match<T, R>(
 	matcher: Option<T>,
 	cases: {
 		Some: (value: T) => R;
 		None: () => R;
 	},
 ): R;
-function match<T, E extends Error, R>(
+export function match<T, E extends Error, R>(
 	matcher: Result<T, E> | Option<T>,
 	cases: {
 		Ok?: (value: T) => R;

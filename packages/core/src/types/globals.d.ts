@@ -1,14 +1,17 @@
-import { Option } from "../src/option";
-import { Result as ResultType } from "../src/result";
-import { Ok as OkType, Err as ErrType } from "../src/result/__internal__/types";
+import { Option } from "../option";
+import { Result } from "../result";
+import {
+	Ok as OkType,
+	Err as ErrType,
+} from "../result/__internal__/return-types";
 import {
 	Some as SomeType,
 	None as NoneType,
-} from "../src/option/__internal__/types";
+} from "../option/__internal__/return-types";
 
 declare global {
 	function match<T, E extends Error, R>(
-		matcher: ResultType<T, E>,
+		matcher: Result<T, E>,
 		cases: {
 			Ok: (value: T) => R;
 			Err: (error: E) => R;
@@ -27,7 +30,7 @@ declare global {
 	function match<T, E extends Error>(
 		matcher: Result<T, E>,
 		cases: {
-			Ok: (value: T) => Some<T>;
+			Ok: (value: T) => Option<T>;
 			Err: (error: E) => Option<T>;
 		},
 	): Option<T>;
@@ -36,19 +39,9 @@ declare global {
 		matcher: Option<T>,
 		cases: {
 			Some: (value: T) => Result<T, E>;
-			None: () => Result<t, E>;
+			None: () => Result<T, E>;
 		},
 	): Result<T, E>;
-
-	/**
-	 * Represents the result of an operation that can either succeed (`Ok`) or fail (`Err`).
-	 */
-	type Result<T, E extends Error> = OkType<T> | ErrType<E>;
-
-	type Ok<T, E = never> = [T] extends [never] ? never : T;
-	type Err<E, T = never> = [E] extends [never] ? never : E;
-
-	type Result<T, E extends Error> = Ok<T> | Err<E>;
 
 	/**
 	 * Creates a new `Ok` instance, representing a successful result.
@@ -60,7 +53,7 @@ declare global {
 	 * console.log(result.isOk()); // true
 	 * console.log(result.unwrap()); // 42
 	 */
-	function Ok<T>(value: T): Result<T, never>;
+	function Ok<T>(value: T): OkType<T>;
 
 	/**
 	 * Creates a new `Err` instance, representing a failed result.
@@ -72,10 +65,29 @@ declare global {
 	 * console.log(result.isErr()); // true
 	 * console.log(result.unwrapErr()); // "Something went wrong"
 	 */
-	function Err<E extends Error>(error: E | string): Result<never, E>;
+	function Err<E extends Error>(error: E | string): ErrType<E>;
 
+	/**
+	 * creates a new `Some` instance, representing some value.
+	 * @template T the type of the value contained in the `Some`.
+	 * @param value the value to wrap in the `some` instance.
+	 * @returns an `Some` instance containing the given value.
+	 * @example
+	 * const option = Some("some value");
+	 * console.log(option.isSome()); // true
+	 * console.log(option.unwrap()); // "some value"
+	 */
 	function Some<T>(value: T): SomeType<T>;
+	/**
+	 * creates a new `None` instance, representing no value.
+	 * @param  `` There are no paramaters in the `None` instance.
+	 * @returns an `None` instance containing no value.
+	 * @example
+	 * const option = None();
+	 * console.log(option.isNone()); // true
+	 * console.log(option.unwrap()); // throws
+	 */
 	function None(): NoneType;
 }
 
-export {};
+export { };

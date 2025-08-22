@@ -1,8 +1,8 @@
 import {
 	Some as SomeType,
 	None as NoneType,
-	Option,
-} from "./__internal__/types";
+	type Option,
+} from "./__internal__/return-types";
 
 /**
  * Creates a new `Some` instance, representing an `Option` with a value.

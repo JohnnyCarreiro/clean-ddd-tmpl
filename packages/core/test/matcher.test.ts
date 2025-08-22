@@ -1,5 +1,5 @@
-import { None, Option, Some } from "@/option";
-import { Err, Ok, Result } from "@/result";
+import { Option } from "@/option";
+import { Result } from "@/result";
 
 describe("Result Test Suite", () => {
 	it("should handle Ok case", () => {

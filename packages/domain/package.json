@@ -6,14 +6,12 @@
 	"types": "src/main.ts",
 	"type": "module",
 	"scripts": {
-		"test": "vitest"
+    "test": "vitest run"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"dependencies": {
-		"@ddd/core": "workspace:*"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@types/node": "^22.13.4",
 		"vitest": "^3.0.5"
